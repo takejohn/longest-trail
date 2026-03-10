@@ -9,4 +9,5 @@ csv = "1.4.0"
 eframe = "0.33.3"
 egui_graphs = "0.29.0"
 petgraph = "0.8.3"
+rand = "0.10.0"
 serde = { version = "1.0.228", features = ["derive"] }

@@ -2,7 +2,7 @@ use eframe::egui::{Pos2, Shape};
 use egui_graphs::{DefaultEdgeShape, DisplayEdge, EdgeProps};
 use petgraph::{Directed, csr::DefaultIx};
 
-use crate::{graph::{Edge, Node}, visualizer::NodeShape};
+use crate::{args::ARGS, graph::{Edge, Node}, visualizer::NodeShape};
 
 #[derive(Debug, Clone)]
 pub(super) struct EdgeShape(DefaultEdgeShape);
@@ -10,8 +10,8 @@ pub(super) struct EdgeShape(DefaultEdgeShape);
 impl From<EdgeProps<Edge>> for EdgeShape {
 	fn from(value: EdgeProps<Edge>) -> Self {
 		let mut inner = DefaultEdgeShape::from(value);
-		inner.width = 1.;
-		inner.tip_size = 5.;
+		inner.width = ARGS.edge_width;
+		inner.tip_size = ARGS.edge_width * 5.;
 		return EdgeShape(inner);
 	}
 }

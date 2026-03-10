@@ -2,7 +2,7 @@ use eframe::egui::{Pos2, Shape};
 use egui_graphs::{DefaultNodeShape, DisplayNode, NodeProps};
 use petgraph::{Directed, csr::DefaultIx};
 
-use crate::graph::{Edge, Node};
+use crate::{args::ARGS, graph::{Edge, Node}};
 
 #[derive(Debug, Clone)]
 pub(super) struct NodeShape(DefaultNodeShape);
@@ -10,7 +10,7 @@ pub(super) struct NodeShape(DefaultNodeShape);
 impl From<NodeProps<Node>> for NodeShape {
 	fn from(value: NodeProps<Node>) -> Self {
 		let mut inner = DefaultNodeShape::from(value);
-		inner.radius = 16.;
+		inner.radius = ARGS.node_size;
 		return NodeShape(inner);
 	}
 }

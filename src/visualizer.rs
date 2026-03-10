@@ -13,7 +13,7 @@ use egui_graphs::{
 use petgraph::{Directed, csr::DefaultIx};
 use rand::RngExt;
 
-use crate::{graph::{Edge, Node, WeightedDiGraphInner}, visualizer::{edge::EdgeShape, font::create_font_definitions, node::NodeShape}};
+use crate::{args::ARGS, graph::{Edge, Node, WeightedDiGraphInner}, visualizer::{edge::EdgeShape, font::create_font_definitions, node::NodeShape}};
 
 mod edge;
 mod font;
@@ -45,6 +45,7 @@ impl eframe::App for GraphVisualizer {
 				.with_labels_always(true);
 			let mut state = get_layout_state::<S>(ui, None);
 			state.base.is_running = true;
+			state.extras.0.params.c = ARGS.center_gravity;
 			set_layout_state(ui, state, None);
 			let mut graph_view = GraphView::new(&mut self.graph)
 				.with_styles(&settings_style);
@@ -54,6 +55,10 @@ impl eframe::App for GraphVisualizer {
 }
 
 pub fn run_visualizer(graph: &WeightedDiGraphInner) -> Result<(), eframe::Error> {
+	if !ARGS.visualize {
+		return Ok(());
+	}
+
 	run_native(
 		"Graph",
 		NativeOptions::default(),

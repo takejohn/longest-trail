@@ -1,4 +1,4 @@
-use std::ffi::OsString;
+use std::{ffi::OsString, sync::LazyLock};
 
 use clap::Parser;
 
@@ -11,4 +11,23 @@ pub struct Args {
 	/// Open a window to show the graph.
 	#[arg(short = 'v', long, default_value_t = false)]
 	pub visualize: bool,
+
+	/// (When visualize mode is on) Center gravity; pull nodes toward center.
+	#[arg(long, default_value_t = 0.3)]
+	pub center_gravity: f32,
+
+	/// (When visualize mode is on) Size of a node and font.
+	#[arg(long, default_value_t = 5.)]
+	pub node_size: f32,
+
+	/// (When visualize mode is on) Width of an edge.
+	#[arg(long, default_value_t = 1.)]
+	pub edge_width: f32,
 }
+
+pub static ARGS: LazyLock<Args> = LazyLock::new(|| {
+	match Args::try_parse() {
+			Ok(args) => args,
+			Err(e) => e.exit(),
+	}
+});

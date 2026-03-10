@@ -1,11 +1,22 @@
 use eframe::{NativeOptions, egui::{self, Pos2}, run_native};
-use egui_graphs::{CenterGravity, Extra, FruchtermanReingoldWithCenterGravity, FruchtermanReingoldWithExtrasState, Layout, LayoutForceDirected, LayoutRandom, LayoutStateRandom, SettingsStyle, get_layout_state, set_layout_state, to_graph_custom};
+use egui_graphs::{
+	CenterGravity,
+	Extra,
+	FruchtermanReingoldWithCenterGravity,
+	FruchtermanReingoldWithExtrasState,
+	LayoutForceDirected,
+	SettingsStyle,
+	get_layout_state,
+	set_layout_state,
+	to_graph_custom,
+};
 use petgraph::{Directed, csr::DefaultIx};
 use rand::RngExt;
 
-use crate::{graph::{Edge, Node, WeightedDiGraphInner}, visualizer::{edge::EdgeShape, node::NodeShape}};
+use crate::{graph::{Edge, Node, WeightedDiGraphInner}, visualizer::{edge::EdgeShape, font::create_font_definitions, node::NodeShape}};
 
 mod edge;
+mod font;
 mod node;
 
 type Graph = egui_graphs::Graph<Node, Edge, Directed, DefaultIx, NodeShape, EdgeShape>;
@@ -46,7 +57,10 @@ pub fn run_visualizer(graph: &WeightedDiGraphInner) -> Result<(), eframe::Error>
 	run_native(
 		"Graph",
 		NativeOptions::default(),
-		Box::new(|cc| Ok(Box::new(GraphVisualizer::new(cc, graph))))
+		Box::new(|cc| {
+			cc.egui_ctx.set_fonts(create_font_definitions());
+			Ok(Box::new(GraphVisualizer::new(cc, graph)))
+		})
 	)
 }
 

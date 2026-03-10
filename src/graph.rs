@@ -1,10 +1,10 @@
-use std::{collections::HashMap, io, rc::Rc};
+use std::{collections::HashMap, fmt::Display, io, rc::Rc};
 
-use petgraph::{Directed, graph::{DiGraph, Edges, NodeIndex}};
+use petgraph::{Directed, graph::NodeIndex, prelude::StableDiGraph, stable_graph::Edges};
 
 use crate::csv::CSVDeserializer;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Node {
 	pub name: Rc<str>,
 }
@@ -15,7 +15,13 @@ impl Node {
 	}
 }
 
-#[derive(Debug)]
+impl Display for Node {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{}", self.name)
+	}
+}
+
+#[derive(Debug, Clone)]
 pub struct Edge {
 	pub weight: u64,
 	pub name: String,
@@ -27,7 +33,13 @@ impl Edge {
 	}
 }
 
-pub type WeightedDiGraphInner = DiGraph<Node, Edge>;
+impl Display for Edge {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "\"{}\" {}", self.name, self.weight)
+	}
+}
+
+pub type WeightedDiGraphInner = StableDiGraph<Node, Edge>;
 
 type NameNodeIxMap = HashMap<Rc<str>, NodeIndex>;
 
@@ -50,6 +62,10 @@ impl WeightedDiGraph {
 		}
 
 		return Ok(WeightedDiGraph { inner: graph, name_node_ix_map });
+	}
+
+	pub fn inner(&self) -> &WeightedDiGraphInner {
+		&self.inner
 	}
 
 	pub fn node(&self, name: &str) -> Option<NodeReference<'_>> {

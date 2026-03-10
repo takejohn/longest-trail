@@ -1,9 +1,10 @@
-use std::{error::Error, ffi::OsStr, fs::File, io};
+use std::{error::Error, ffi::OsStr, fs::File};
 
 use clap::Parser;
 
-use crate::{args::Args, graph::WeightedDiGraph};
+use crate::{args::Args, graph::WeightedDiGraph, visualizer::run_visualizer};
 
+mod visualizer;
 mod args;
 mod csv;
 mod graph;
@@ -16,6 +17,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let graph = load_graph_from_csv_file(&args.csv_path)?;
 	println!("nodes: {}", graph.node_count());
 	println!("edges: {}", graph.edge_count());
+	if args.visualize {
+		run_visualizer(graph.inner())?;
+	}
 	Ok(())
 }
 

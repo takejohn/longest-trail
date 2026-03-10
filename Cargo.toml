@@ -6,5 +6,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.60", features = ["derive"] }
 csv = "1.4.0"
+eframe = "0.33.3"
+egui_graphs = "0.29.0"
 petgraph = "0.8.3"
 serde = { version = "1.0.228", features = ["derive"] }

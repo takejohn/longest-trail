@@ -6,12 +6,13 @@ mod visualizer;
 mod args;
 mod csv;
 mod graph;
+mod solver;
 
 fn main() -> Result<(), Box<dyn Error>> {
 	let graph = load_graph_from_csv_file(&ARGS.csv_path)?;
-	println!("nodes: {}", graph.node_count());
-	println!("edges: {}", graph.edge_count());
-	run_visualizer(graph.inner())?;
+	println!("nodes: {}", graph.graph().node_count());
+	println!("edges: {}", graph.graph().edge_count());
+	run_visualizer(graph.graph())?;
 	Ok(())
 }
 

@@ -1926,6 +1926,7 @@ dependencies = [
  "csv",
  "eframe",
  "egui_graphs",
+ "fixedbitset",
  "petgraph",
  "rand 0.10.0",
  "serde",

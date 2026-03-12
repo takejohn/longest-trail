@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Display, io, rc::Rc};
 
-use petgraph::{Directed, graph::NodeIndex, prelude::StableDiGraph, stable_graph::Edges};
+use petgraph::{prelude::StableDiGraph, stable_graph::NodeIndex};
 
 use crate::csv::CSVDeserializer;
 
@@ -64,42 +64,12 @@ impl WeightedDiGraph {
 		return Ok(WeightedDiGraph { inner: graph, name_node_ix_map });
 	}
 
-	pub fn inner(&self) -> &WeightedDiGraphInner {
+	pub fn graph(&self) -> &WeightedDiGraphInner {
 		&self.inner
 	}
 
-	pub fn node(&self, name: &str) -> Option<NodeReference<'_>> {
-		let &ix = self.name_node_ix_map.get(name)?;
-		let weight = self.inner.node_weight(ix)?;
-		return Some(NodeReference::new(&self.inner, ix, weight));
-	}
-
-	pub fn node_count(&self) -> usize {
-		self.inner.node_count()
-	}
-
-	pub fn edge_count(&self) -> usize {
-		self.inner.edge_count()
-	}
-}
-
-pub struct NodeReference<'a> {
-	graph: &'a WeightedDiGraphInner,
-	ix: NodeIndex,
-	weight: &'a Node,
-}
-
-impl<'a> NodeReference<'a> {
-	pub(self) fn new(graph: &'a WeightedDiGraphInner, ix: NodeIndex, weight: &'a Node) -> Self {
-		NodeReference { graph, ix, weight }
-	}
-
-	pub fn edges(&self) -> Edges<'a, Edge, Directed> {
-		self.graph.edges(self.ix)
-	}
-
-	pub fn weight(&self) -> &'a Node {
-		self.weight
+	pub fn node(&self, name: &str) -> Option<NodeIndex> {
+		self.name_node_ix_map.get(name).map(|&ix| ix)
 	}
 }
 
@@ -123,8 +93,8 @@ mod tests {
 	#[test]
 	fn empty() {
 		let graph = WeightedDiGraph::load_from_csv("".as_bytes()).unwrap();
-		assert_eq!(graph.node_count(), 0);
-		assert_eq!(graph.edge_count(), 0);
+		assert_eq!(graph.graph().node_count(), 0);
+		assert_eq!(graph.graph().edge_count(), 0);
 	}
 
 	#[test]
@@ -137,8 +107,8 @@ D,B,5,DB
 D,C,3,DB
 ";
 		let graph = WeightedDiGraph::load_from_csv(csv.as_bytes()).unwrap();
-		assert_eq!(graph.node_count(), 4);
-		assert_eq!(graph.edge_count(), 5);
+		assert_eq!(graph.graph().node_count(), 4);
+		assert_eq!(graph.graph().edge_count(), 5);
 	}
 
 	mod node_reference {
@@ -148,8 +118,8 @@ D,C,3,DB
 		fn weight() {
 			let csv = "A,A,1,AA";
 			let graph = WeightedDiGraph::load_from_csv(csv.as_bytes()).unwrap();
-			let a = graph.node("A").unwrap();
-			assert_eq!(a.weight.name.as_ref(), "A");
+			let a = graph.node("A").and_then(|ix| graph.graph().node_weight(ix)).unwrap();
+			assert_eq!(a.name.as_ref(), "A");
 		}
 
 		#[test]
@@ -157,7 +127,7 @@ D,C,3,DB
 			let csv = "A,B,1,AB";
 			let graph = WeightedDiGraph::load_from_csv(csv.as_bytes()).unwrap();
 			let a = graph.node("A").unwrap();
-			let edges = a.edges().map(|r| r.weight()).collect::<Vec<&Edge>>();
+			let edges = graph.graph().edges(a).map(|r| r.weight()).collect::<Vec<&Edge>>();
 			assert_eq!(edges.len(), 1);
 			let edge = edges[0];
 			assert_eq!(edge.name, "AB");

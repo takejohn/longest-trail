@@ -2,11 +2,21 @@ use std::{ffi::OsString, sync::LazyLock};
 
 use clap::Parser;
 
+use crate::solver::SolverAlgorithm;
+
 #[derive(Debug, Parser)]
 pub struct Args {
 	/// A path to a csv file of edges.
 	/// Each record `a,b,weight,name` describes an edge from node `a` to `b` with weight `weight` named `name`.
 	pub csv_path: OsString,
+
+	/// A node to start from.
+	#[arg(short = 's', long)]
+	pub start: Option<String>,
+
+	/// an algorithm to solve the problem.
+	#[arg(short = 'a', long, default_value_t)]
+	pub algorithm: SolverAlgorithm,
 
 	/// Open a window to show the graph.
 	#[arg(short = 'v', long, default_value_t = false)]
